@@ -161,6 +161,29 @@ Tested and working with:
 - **Duden** — Etymologie (De-De)
 - **Universal** — De-Ru, Ru-De
 
+## German Word Deinflection
+
+By default, Yomitan searches for exact dictionary matches. For German, this means if you have a dictionary entry for "laufen" but you look up "lief" or "gelaufen", Yomitan won't find it.
+
+We provide a custom `german-transforms.js` file in the `yomitan-de-language/` folder that adds German word deinflection rules:
+
+- **Verbs**: "lief" → "laufen", "gelaufen" → "laufen"
+- **Nouns**: "Männer" → "Mann", "Tische" → "Tisch"
+- **Adjectives**: "schnellste" → "schnell"
+- **Umlauts**: "Bäume" → "Baume"
+
+### Installation
+
+Copy `yomitan-de-language/german-transforms.js` to your Yomitan extension folder:
+- **Chrome**: `chrome-extension_[ID]/js/language/de/german-transforms.js`
+- **Firefox**: `moz-extension_[ID]/js/language/de/german-transforms.js`
+
+Restart Yomitan and search for inflected German words — they should now find their dictionary forms.
+
+**Note:** This is a community-made solution. The rules may not cover all German word forms. Feel free to improve it!
+
+See `yomitan-de-language/README.md` for detailed instructions.
+
 ## Project Structure
 
 ```
@@ -174,6 +197,9 @@ Tested and working with:
 │   └── exceptions.py        # Custom exceptions
 ├── data/
 │   └── styles.css           # Default German dictionary stylesheet
+├── yomitan-de-language/
+│   ├── german-transforms.js # German word deinflection for Yomitan
+│   └── README.md            # Installation instructions
 ├── tests/
 │   ├── test_parser.py
 │   ├── test_converter.py

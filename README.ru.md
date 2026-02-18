@@ -161,6 +161,29 @@ ruff format .
 - **Duden** — Etymologie (De-De)
 - **Universal** — De-Ru, Ru-De
 
+## Немецкое склонение слов
+
+По умолчанию Yomitan ищет точные совпадения в словаре. Для немецкого это означает, что если у вас есть статья для слова "laufen", но вы ищете "lief" или "gelaufen", Yomitan не найдёт её.
+
+Мы предоставляем пользовательский файл `german-transforms.js` в папке `yomitan-de-language/`, который добавляет правила деинфлексии для немецких слов:
+
+- **Глаголы**: "lief" → "laufen", "gelaufen" → "laufen"
+- **Существительные**: "Männer" → "Mann", "Tische" → "Tisch"
+- **Прилагательные**: "schnellste" → "schnell"
+- **Умлауты**: "Bäume" → "Baume"
+
+### Установка
+
+Скопируйте `yomitan-de-language/german-transforms.js` в папку вашего расширения Yomitan:
+- **Chrome**: `chrome-extension_[ID]/js/language/de/german-transforms.js`
+- **Firefox**: `moz-extension_[ID]/js/language/de/german-transforms.js`
+
+Перезапустите Yomitan и ищите изменённые формы немецких слов — теперь они должны находить свои словарные формы.
+
+**Примечание:** Это решение, созданное сообществом. Правила могут охватывать не все формы немецких слов. Не стесняйтесь улучшать его!
+
+Подробные инструкции см. в `yomitan-de-language/README.md`.
+
 ## Структура проекта
 
 ```
@@ -174,6 +197,9 @@ ruff format .
 │   └── exceptions.py        # Пользовательские исключения
 ├── data/
 │   └── styles.css           # Таблица стилей для немецких словарей
+├── yomitan-de-language/
+│   ├── german-transforms.js # Деинфлексия немецких слов для Yomitan
+│   └── README.md            # Инструкция по установке
 ├── tests/
 │   ├── test_parser.py
 │   ├── test_converter.py
