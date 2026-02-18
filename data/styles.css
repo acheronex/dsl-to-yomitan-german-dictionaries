@@ -1,0 +1,243 @@
+span[title] {
+    cursor: help;
+}
+
+ul[data-sc-content="sense-groups"] {
+    list-style-type: "＊";
+}
+
+li[data-sc-content="sense-group"],
+li[data-sc-content="forms"] {
+    padding-left: 0.25em;
+}
+
+div[data-sc-content="sense-group"],
+span[data-sc-content="sense-group"] {
+    display: block;
+}
+
+div[data-sc-content="sense-group"] {
+    margin-top: 0.1em;
+}
+
+span[data-sc-content="sense-group"] {
+    display: inline;
+}
+
+div[data-sc-content="sense-group"] > div[data-sc-content="sense"] {
+    margin-top: 2px;
+}
+
+div[data-sc-content="sense-group"] > div[data-sc-content="sense"]:first-child {
+    margin-top: 0;
+}
+
+span[data-sc-content="sense-group"] > span[data-sc-content="sense"] {
+    margin-right: 0.5em;
+}
+
+span[data-sc-content="sense-group"] > span[data-sc-content="sense"]:last-child {
+    margin-right: 0;
+}
+
+li[data-sc-content="sense-group"] + li[data-sc-content="sense-group"],
+div[data-sc-content="forms"],
+li[data-sc-content="forms"] {
+    margin-top: 0.5em;
+}
+
+li[data-sc-content="sense"] {
+    padding-left: 0.25em;
+}
+
+div[data-sc-content="sense"] {
+    margin-top: 8px;
+}
+
+span[data-sc-content="sense"] {
+    display: inline;
+    margin-right: 0.5em;
+}
+
+div[data-sc-content="sense"]:first-of-type,
+div[data-sc-content="sense-group"] > div[data-sc-content="sense"]:first-child {
+    margin-top: 0;
+}
+
+li[data-sc-content="sense"] ul[data-sc-content="glossary"] {
+    list-style-type: none;
+    padding-left: 0.25em;
+}
+
+span[data-sc-content="bold"] {
+    font-weight: bold;
+}
+
+span[data-sc-content="italic"] {
+    font-style: italic;
+}
+
+span[data-sc-content="underline"] {
+    text-decoration: underline;
+}
+
+span[data-sc-content="superscript"] {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+span[data-sc-content="subscript"] {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
+span[data-sc-class="colored"] {
+    font-weight: bold;
+    color: #0066cc;
+}
+
+span[data-sc-content="color"] {
+    font-weight: bold;
+    color: #0066cc;
+}
+
+span[data-sc-content="abbreviation"] {
+    font-style: italic;
+    color: #2E7D32;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-weight: normal;
+}
+
+span[data-sc-content="example-sentence"],
+div[data-sc-content="example-sentence"] {
+    font-style: italic;
+    color: #666;
+}
+
+div[data-sc-content="example-sentence"] {
+    padding-left: 1em;
+    text-indent: -1em;
+    padding-top: 0.25em;
+    border-left: 1px solid #ccc;
+}
+
+span[data-sc-content="comment"],
+div[data-sc-content="comment"] {
+    color: gray;
+    font-style: italic;
+}
+
+span[data-sc-content="translation"],
+div[data-sc-content="translation"] {
+    color: darkcyan;
+}
+
+span[data-sc-content="reference"],
+div[data-sc-content="reference"] {
+    color: #1A73E8;
+}
+
+a[data-sc-content="reference"] {
+    color: #1A73E8;
+    text-decoration: none;
+}
+
+a[data-sc-content="reference"]:hover {
+    text-decoration: underline;
+}
+
+span[data-sc-content="optional"],
+div[data-sc-content="optional"] {
+    color: #666;
+}
+
+div[data-sc-class="margin-1"],
+span[data-sc-class="margin-1"] {
+    margin-left: 12px;
+}
+
+div[data-sc-class="margin-2"],
+span[data-sc-class="margin-2"] {
+    margin-left: 24px;
+}
+
+div[data-sc-class="margin-3"],
+span[data-sc-class="margin-3"] {
+    margin-left: 36px;
+}
+
+div[data-sc-class="margin-4"],
+span[data-sc-class="margin-4"] {
+    margin-left: 48px;
+}
+
+div[data-sc-class="margin-5"],
+span[data-sc-class="margin-5"] {
+    margin-left: 60px;
+}
+
+span[data-sc-content="transcription"] {
+    font-style: italic;
+    color: #888;
+}
+
+span[data-sc-content="language-zone"] {
+    font-style: italic;
+}
+
+div[data-sc-content="language-zone"][data-sc-lang="de"] {
+    border-left: 2px solid #0066cc;
+    padding-left: 0.5em;
+}
+
+div[data-sc-content="language-zone"][data-sc-lang="ru"] {
+    border-left: 2px solid #cc0000;
+    padding-left: 0.5em;
+}
+
+ul[data-sc-content="glossary"] {
+    list-style-type: disc;
+}
+
+li[data-sc-content="sense"] {
+    margin-top: 0.25em;
+}
+
+@media (prefers-color-scheme: dark) {
+    span[data-sc-class="colored"],
+    span[data-sc-content="color"] {
+        color: #6db3f2;
+    }
+    span[data-sc-content="abbreviation"] {
+        color: #81c784;
+    }
+    span[data-sc-content="example-sentence"] {
+        color: #aaa;
+    }
+    span[data-sc-content="comment"] {
+        color: #9e9e9e;
+    }
+    span[data-sc-content="translation"] {
+        color: #4dd0e1;
+    }
+    span[data-sc-content="reference"] {
+        color: #64b5f6;
+    }
+    span[data-sc-content="optional"] {
+        color: #aaa;
+    }
+    span[data-sc-content="transcription"] {
+        color: #b0b0b0;
+    }
+    div[data-sc-content="example-sentence"] {
+        border-left-color: #555;
+    }
+    div[data-sc-content="language-zone"][data-sc-lang="de"] {
+        border-left-color: #6db3f2;
+    }
+    div[data-sc-content="language-zone"][data-sc-lang="ru"] {
+        border-left-color: #e57373;
+    }
+}
