@@ -187,7 +187,7 @@ MIT License — see LICENSE file for details.
 
 ## Author
 
-Evgeny Eroshev (GitHub: @acheronex)
+Евгений Ерошев (GitHub: @acheronex)
 
 ---
 
@@ -266,4 +266,4 @@ MIT License — подробности в файле LICENSE.
 
 ## Автор
 
-Евгений Эрошев (GitHub: @acheronex)
+Евгений Ерошев (GitHub: @acheronex)
