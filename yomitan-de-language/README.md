@@ -18,7 +18,7 @@ This file adds German deinflection rules that convert inflected German words bac
 
 ## Installation
 
-### Method 1: Manual (Recommended)
+### Installation
 
 1. Find your Yomitan extension folder:
    - **Chrome**: `chrome-extension_[ID]/js/language/de/`
@@ -31,10 +31,6 @@ This file adds German deinflection rules that convert inflected German words bac
 3. Copy our `german-transforms.js` to the `js/language/de/` folder
 
 4. Reload Yomitan
-
-### Method 2: UserCSS (Alternative)
-
-If you don't want to modify extension files, you can also try using Yomitan's built-in search matching options in settings.
 
 ## Current Limitations
 
