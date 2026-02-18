@@ -32,3 +32,9 @@ out/
 
 # Ruff
 .ruff_cache/
+
+# Dictionary source files (proprietary)
+amazing-german-dics/
+japanese-dics/
+Yomitan-Extension/
+AGENTS.md

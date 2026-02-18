@@ -18,19 +18,29 @@ This file adds German deinflection rules that convert inflected German words bac
 
 ## Installation
 
-### Installation
+### Recommended Method
 
-1. Find your Yomitan extension folder:
-   - **Chrome**: `chrome-extension_[ID]/js/language/de/`
-   - **Firefox**: `moz-extension_[ID]/js/language/de/`
-   
-   To find the ID, open Yomitan settings in your browser and look at the URL, or search for `german-transforms.js` in your extensions folder.
+1. Download the latest Yomitan release as a ZIP file from:
+   https://github.com/yomidevs/yomitan/releases
 
-2. Backup the original `german-transforms.js` file (if it exists)
+2. Extract the ZIP file to a folder
 
-3. Copy our `german-transforms.js` to the `js/language/de/` folder
+3. Copy our `german-transforms.js` to the extracted folder:
+   `js/language/de/german-transforms.js`
 
-4. Reload Yomitan
+4. Load the modified extension in Chrome:
+   - Open `chrome://extensions/`
+   - Enable **Developer mode** (toggle in top right)
+   - Click **Load unpacked**
+   - Select the extracted folder
+
+5. Pin Yomitan in your browser and enjoy German deinflection!
+
+### Benefits of this method
+
+- No need to find the installed extension folder
+- Easier to update and modify
+- Full control over the extension
 
 ## Current Limitations
 

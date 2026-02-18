@@ -174,11 +174,7 @@ We provide a custom `german-transforms.js` file in the `yomitan-de-language/` fo
 
 ### Installation
 
-Copy `yomitan-de-language/german-transforms.js` to your Yomitan extension folder:
-- **Chrome**: `chrome-extension_[ID]/js/language/de/german-transforms.js`
-- **Firefox**: `moz-extension_[ID]/js/language/de/german-transforms.js`
-
-Restart Yomitan and search for inflected German words — they should now find their dictionary forms.
+Download the latest Yomitan release from https://github.com/yomidevs/yomitan/releases, extract it, replace `german-transforms.js` in `js/language/de/` with the one from `yomitan-de-language/`, then load it as an unpacked extension in Chrome (enable Developer mode in `chrome://extensions/` and click "Load unpacked").
 
 **Note:** This is a community-made solution. The rules may not cover all German word forms. Feel free to improve it!
 
