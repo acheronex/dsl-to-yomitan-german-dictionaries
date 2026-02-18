@@ -191,7 +191,7 @@ Evgeny Eroshev (GitHub: @acheronex)
 
 ---
 
-# README на русском
+# README на русском {#readme-in-russian}
 
 ## Описание
 
