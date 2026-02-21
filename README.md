@@ -180,6 +180,27 @@ Download the latest Yomitan release from https://github.com/yomidevs/yomitan/rel
 
 See `yomitan-de-language/README.md` for detailed instructions.
 
+## Anki Integration / Интеграция с Anki
+
+A pre-configured Anki deck optimized for German vocabulary learning with Yomitan. / Предварительно настроенная колода Anki для изучения немецкого языка с Yomitan.
+
+Features / Возможности:
+
+- **Proper fields** — expression, reading, meaning, sentence, audio, conjugation, frequencies
+- **Custom styling** — red highlights for keywords, gray translation text / Собственная стилизация — ключевое слово красным, перевод серым
+- **Ready to use** — import and connect to Yomitan immediately / Готова к использованию
+
+### Quick Setup / Быстрая настройка
+
+1. Download `anki-decks/German Yomitan.apkg` and double-click to import into Anki
+2. In Yomitan settings → Anki, select deck and model: `Yomitan Close GERMAN`
+3. Map fields (see `anki-decks/README.md` for detailed field mapping)
+4. Click the "+" button in Yomitan to create cards
+
+### Detailed Instructions / Подробная инструкция
+
+See [anki-decks/README.md](anki-decks/README.md) or [anki-decks/README.ru.md](anki-decks/README.ru.md) for complete setup guide.
+
 ## Project Structure
 
 ```
@@ -200,6 +221,10 @@ See `yomitan-de-language/README.md` for detailed instructions.
 │   ├── test_parser.py
 │   ├── test_converter.py
 │   └── test_packer.py
+├── anki-decks/
+│   ├── German Yomitan.apkg     # Pre-configured Anki deck for German
+│   ├── README.md               # Setup guide (English)
+│   └── README.ru.md            # Setup guide (Russian)
 └── requirements.txt
 ```
 

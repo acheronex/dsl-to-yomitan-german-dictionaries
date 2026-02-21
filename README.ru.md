@@ -180,6 +180,27 @@ ruff format .
 
 Подробные инструкции см. в `yomitan-de-language/README.md`.
 
+## Интеграция с Anki / Anki Integration
+
+Предварительно настроенная колода Anki для изучения немецкого языка с Yomitan. / A pre-configured Anki deck optimized for German vocabulary learning with Yomitan.
+
+Возможности / Features:
+
+- **Правильные поля** — expression, reading, meaning, sentence, audio, conjugation, frequencies
+- **Собственная стилизация** — ключевое слово выделено красным, перевод серым / Custom styling — red highlights for keywords, gray translation text
+- **Готова к использованию** — импортируйте и подключите к Yomitan сразу / Ready to use
+
+### Быстрая настройка / Quick Setup
+
+1. Скачайте `anki-decks/German Yomitan.apkg` и дважды щелкните для импорта в Anki
+2. В настройках Yomitan → Anki выберите колоду и модель: `Yomitan Close GERMAN`
+3. Сопоставьте поля (см. `anki-decks/README.ru.md` для подробной информации)
+4. Нажмите кнопку "+" в Yomitan для создания карточек
+
+### Подробная инструкция / Detailed Instructions
+
+См. [anki-decks/README.md](anki-decks/README.md) или [anki-decks/README.ru.md](anki-decks/README.ru.md) для полной инструкции по настройке.
+
 ## Структура проекта
 
 ```
@@ -200,6 +221,10 @@ ruff format .
 │   ├── test_parser.py
 │   ├── test_converter.py
 │   └── test_packer.py
+├── anki-decks/
+│   ├── German Yomitan.apkg     # Предварительно настроенная колода Anki для немецкого
+│   ├── README.md               # Инструкция (английский)
+│   └── README.ru.md            # Инструкция (русский)
 └── requirements.txt
 ```
 
