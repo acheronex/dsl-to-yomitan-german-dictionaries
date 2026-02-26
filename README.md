@@ -1,51 +1,45 @@
 # DSL to Yomitan German Dictionaries
 
-A Python tool for converting German ABBYY Lingvo DSL dictionaries to Yomitan format.
+Convert German [ABBYY Lingvo DSL](https://lingvo.wiki/dsl-format) dictionaries into [Yomitan](https://github.com/yomidevs/yomitan)-compatible ZIP archives. Point the tool at a folder of `.dsl` files, and it produces ready-to-import dictionary packages — so you can hover over any German word in your browser and instantly see rich definitions, examples, and translations.
 
 [README in Russian](./README.ru.md)
 
 ---
 
-## Description
+## How It Works
 
-This converter transforms German DSL dictionaries (used by GoldenDict, ABBYY Lingvo) into Yomitan-compatible ZIP archives. Optimized for German dictionaries like Duden, Langenscheidt, and Universal, but works with any DSL format dictionary.
+The converter runs a three-stage pipeline:
 
-## Features
+```
+  .dsl file          Structured JSON         Yomitan ZIP
+      |                    |                      |
+      v                    v                      v
+ +---------+       +--------------+         +---------+
+ |  PARSE  | ----> |   CONVERT    | ------> |  PACK   |
+ +---------+       +--------------+         +---------+
+ DslParser          DslConverter             YomitanPacker
+ src/parser.py      src/converter.py         src/packer.py
+```
 
-- **DSL parsing** — reads UTF-16 encoded .dsl files with proper header extraction
-- **Tag conversion** — transforms DSL tags (bold, italic, colors, margins, translations) to Yomitan structured-content JSON
-- **Multi-dictionary support** — handles Duden, Langenscheidt, Universal, and other German DSL dictionaries
-- **Automatic language detection** — detects De-De, De-Ru, Ru-De from dictionary headers
-- **Dark mode support** — CSS uses `prefers-color-scheme` for automatic theme switching
-- **Term bank splitting** — splits large dictionaries into 10,000 entry chunks
-- **Unit tests** — pytest-based test coverage for parser, converter, and packer
+1. **Parse** — reads UTF-16 encoded `.dsl` files and extracts headword/definition pairs
+2. **Convert** — transforms DSL tag markup (`[b]`, `[c]`, `[ex]`, ...) into Yomitan structured-content JSON
+3. **Pack** — bundles entries into Yomitan v3 ZIP archives, splitting into 10,000-entry term banks, and includes styles with dark mode support
+
+`main.py` orchestrates the full run: it auto-detects dictionary language pairs (De-De, De-Ru, Ru-De), loads abbreviation files, and drives entries through all three stages.
 
 ## Installation
 
+Requires **Python 3.10+**.
+
 ```bash
-# Clone the repository
 git clone https://github.com/acheronex/dsl-to-yomitan-german-dictionaries.git
 cd dsl-to-yomitan-german-dictionaries
 
-# Create virtual environment
 python3 -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-# Activate virtual environment
-# Linux/Mac:
-source venv/bin/activate
-# Windows:
-venv\Scripts\activate
-
-# Install dependencies
 pip install -r requirements.txt
 ```
-
-## Requirements
-
-- Python 3.10+
-- pytest (for testing)
-- chardet (for encoding detection)
-- ruff (for code linting)
 
 ## Usage
 
@@ -54,6 +48,17 @@ pip install -r requirements.txt
 ```bash
 python main.py --input "path/to/dsl/folder" --output "out/"
 ```
+
+### Where to Get DSL Dictionaries
+
+This tool converts existing DSL dictionaries. You can find them in:
+
+- **GoldenDict forums** — community discussions and resources
+- **Ru-Board** — Russian software forums
+- **Torrents** — various dictionary collections
+- **Your existing GoldenDict/Lingvo installation**
+
+*Note: DSL dictionaries are typically proprietary and require proper licensing. Please respect copyright laws in your jurisdiction.*
 
 ### Example: Convert Langenscheidt dictionary
 
@@ -69,32 +74,6 @@ INFO: Processing De-De-Langens_gwdaf.dsl...
 INFO: Successfully created out/De-De-Langens_gwdaf.zip with 32687 entries.
 ```
 
-### Running tests
-
-```bash
-# Run all tests
-pytest
-
-# Run specific test file
-pytest tests/test_parser.py
-
-# Run specific test
-pytest tests/test_parser.py::test_bold_tag
-```
-
-### Code quality
-
-```bash
-# Lint
-ruff check .
-
-# Auto-fix lint errors
-ruff check . --fix
-
-# Format code
-ruff format .
-```
-
 ## Input Format
 
 The tool expects a folder containing `.dsl` files:
@@ -107,7 +86,8 @@ your-dictionary-folder/
 └── *.tif, *.wav             # Optional media files
 ```
 
-### Supported DSL tags
+<details>
+<summary>Supported DSL tags</summary>
 
 | Tag | Description |
 |-----|-------------|
@@ -127,6 +107,8 @@ your-dictionary-folder/
 | `[t]...[/t]` | IPA transcription |
 | `[lang id=N]...[/lang]` | Language zone |
 
+</details>
+
 ## Output Format
 
 The tool creates a ZIP archive compatible with Yomitan:
@@ -137,19 +119,8 @@ output/
     ├── index.json          # Dictionary metadata
     ├── term_bank_1.json    # First 10,000 entries
     ├── term_bank_2.json    # Next 10,000 entries (if needed)
-    └── styles.css          # Dictionary styles
+    └── styles.css          # Dictionary styles (includes dark mode)
 ```
-
-## Where to Get DSL Dictionaries
-
-This tool converts existing DSL dictionaries. You can find them in:
-
-- **GoldenDict forums** — community discussions and resources
-- **Ru-Board** — Russian software forums
-- **Torrents** — various dictionary collections
-- **Your existing GoldenDict/Lingvo installation**
-
-*Note: DSL dictionaries are typically proprietary and require proper licensing. Please respect copyright laws in your jurisdiction.*
 
 ## Supported Dictionaries
 
@@ -180,36 +151,50 @@ Download the latest Yomitan release from https://github.com/yomidevs/yomitan/rel
 
 See `yomitan-de-language/README.md` for detailed instructions.
 
-## Anki Integration / Интеграция с Anki
+## Anki Integration
 
-A pre-configured Anki deck optimized for German vocabulary learning with Yomitan. / Предварительно настроенная колода Anki для изучения немецкого языка с Yomitan.
-
-Features / Возможности:
+A pre-configured Anki deck optimized for German vocabulary learning with Yomitan.
 
 - **Proper fields** — expression, reading, meaning, sentence, audio, conjugation, frequencies
-- **Custom styling** — red highlights for keywords, gray translation text / Собственная стилизация — ключевое слово красным, перевод серым
-- **Ready to use** — import and connect to Yomitan immediately / Готова к использованию
+- **Custom styling** — red highlights for keywords, gray translation text
+- **Ready to use** — import and connect to Yomitan immediately
 
-### Quick Setup / Быстрая настройка
+### Quick Setup
 
 1. Download `anki-decks/German Yomitan.apkg` and double-click to import into Anki
 2. In Yomitan settings → Anki, select deck and model: `Yomitan Close GERMAN`
 3. Map fields (see `anki-decks/README.md` for detailed field mapping)
 4. Click the "+" button in Yomitan to create cards
 
-### Detailed Instructions / Подробная инструкция
+See [anki-decks/README.md](anki-decks/README.md) for complete setup guide.
 
-See [anki-decks/README.md](anki-decks/README.md) or [anki-decks/README.ru.md](anki-decks/README.ru.md) for complete setup guide.
+## Development
+
+### Running tests
+
+```bash
+pytest                              # all tests
+pytest tests/test_converter.py      # single file
+pytest tests/test_parser.py::test_bold_tag  # single test
+```
+
+### Code quality
+
+```bash
+ruff check .          # lint
+ruff check . --fix    # auto-fix
+ruff format .         # format
+```
 
 ## Project Structure
 
 ```
 .
-├── main.py                  # CLI entry point
+├── main.py                  # CLI entry point (orchestrates the pipeline)
 ├── src/
-│   ├── parser.py            # DSL file reading and entry extraction
-│   ├── converter.py         # DSL tags → Yomitan structured-content JSON
-│   ├── packer.py            # ZIP archive creation
+│   ├── parser.py            # Stage 1: DSL file reading and entry extraction
+│   ├── converter.py         # Stage 2: DSL tags → Yomitan structured-content JSON
+│   ├── packer.py            # Stage 3: ZIP archive creation
 │   ├── tag_map.py           # DSL tag definitions and regex patterns
 │   └── exceptions.py        # Custom exceptions
 ├── data/
