@@ -1,10 +1,10 @@
 /**
- * GERMAN TRANSFORMS - STABLE VERSION
+ * GERMAN TRANSFORMS - STABLE VERSION (safer v2)
  */
 
 const germanLetters = 'a-zA-ZäöüßÄÖÜẞ';
 
-// === ОПРЕДЕЛЕНИЕ УСЛОВИЙ (Обязательно для работы) ===
+// === ОПРЕДЕЛЕНИЕ УСЛОВИЙ ===
 const conditions = {
     v: { name: 'Verb', isDictionaryForm: true },
     n: { name: 'Noun', isDictionaryForm: true },
@@ -12,8 +12,6 @@ const conditions = {
 };
 
 // === ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ===
-
-// Функция для безопасной замены окончания
 function stripSuffix(term, suffix, replacement) {
     if (term.endsWith(suffix)) {
         return term.slice(0, -suffix.length) + replacement;
@@ -21,190 +19,218 @@ function stripSuffix(term, suffix, replacement) {
     return term;
 }
 
-// Функция для возврата умлаута (ä->a, ö->o, ü->u)
+function isValidLemma(term) {
+    // Отсекаем мусор: пусто, слишком коротко, не-буквы
+    return typeof term === 'string'
+        && term.length >= 3
+        && new RegExp(`^[${germanLetters}]+$`).test(term);
+}
+
+function safeResult(original, candidate) {
+    if (!isValidLemma(candidate)) return original;
+    if (candidate === original) return original;
+    return candidate;
+}
+
+// Возврат умлаута (ä->a, ö->o, ü->u) только последнего вхождения
 function deinflectUmlaut(term) {
-    // Простая замена последней встреченной гласной
-    // Порядок важен: äu проверяем первым
-    if (term.includes('äu')) return term.replace(/äu(?!.*äu)/, 'au'); // Häuser -> Hauser
-    if (term.includes('ä')) return term.replace(/ä(?!.*ä)/, 'a');     // Männer -> Manner
-    if (term.includes('ö')) return term.replace(/ö(?!.*ö)/, 'o');     // Töne -> Tone
-    if (term.includes('ü')) return term.replace(/ü(?!.*ü)/, 'u');     // Türen -> Turen
+    if (term.includes('äu')) return term.replace(/äu(?!.*äu)/, 'au');
+    if (term.includes('ä')) return term.replace(/ä(?!.*ä)/, 'a');
+    if (term.includes('ö')) return term.replace(/ö(?!.*ö)/, 'o');
+    if (term.includes('ü')) return term.replace(/ü(?!.*ü)/, 'u');
     return term;
 }
 
-// === ГЕНЕРАТОР ПРАВИЛ (ПРОСТОЙ) ===
-
-// Создает правило: просто отрезать окончание
-function makeSimpleRule(suffix, replacement = '') {
+// === ГЕНЕРАТОР ПРАВИЛ ===
+function makeSimpleRule(suffix, replacement = '', conditionsIn = [], conditionsOut = []) {
     return {
         type: 'other',
         isInflected: new RegExp(`${suffix}$`),
-        deinflect: (term) => stripSuffix(term, suffix, replacement),
-        conditionsIn: [],
-        conditionsOut: [],
+        deinflect: (term) => {
+            const candidate = stripSuffix(term, suffix, replacement);
+            return safeResult(term, candidate);
+        },
+        conditionsIn,
+        conditionsOut,
     };
 }
 
-// Создает правило: отрезать окончание + убрать умлаут (Männer -> Mann)
-function makeUmlautRule(suffix, replacement = '') {
-    // Регулярка требует наличия одного из умлаутов и окончания
+function makeUmlautRule(suffix, replacement = '', conditionsIn = [], conditionsOut = []) {
     const regex = new RegExp(`[äöü].*${suffix}$`);
     return {
         type: 'other',
         isInflected: regex,
         deinflect: (term) => {
             const stripped = stripSuffix(term, suffix, replacement);
-            return deinflectUmlaut(stripped);
+            const candidate = deinflectUmlaut(stripped);
+            return safeResult(term, candidate);
         },
-        conditionsIn: [],
-        conditionsOut: [],
+        conditionsIn,
+        conditionsOut,
     };
 }
 
-// === СПИСКИ ПРАВИЛ ===
+// === ПРАВИЛА ===
 
-// 1. СУЩЕСТВИТЕЛЬНЫЕ И ПРИЛАГАТЕЛЬНЫЕ
-// Просто перечисляем правила явным списком
+// 1) Существительные/прилагательные (сужено)
 const declensionRules = [
-    // --- Простые срезы ---
-    makeSimpleRule('en', ''),  // guten -> gut
-    makeSimpleRule('e', ''),   // Tage -> Tag
-    makeSimpleRule('er', ''),  // Kinder -> Kind
-    makeSimpleRule('n', ''),   // Regeln -> Regel
-    makeSimpleRule('s', ''),   // Autos -> Auto
-    makeSimpleRule('es', ''),  // gutes
-    makeSimpleRule('em', ''),  // gutem
-    makeSimpleRule('ern', ''), // Kindern -> Kind
-    
-    // --- Умлауты (Männer -> Mann) ---
-    makeUmlautRule('er', ''),  // Männer -> Mann
-    makeUmlautRule('e', ''),   // Bäume -> Baum
-    makeUmlautRule('en', ''),  
-    makeUmlautRule('än', 'an'), // Особый случай
-    
-    // --- Прилагательные (Сравнение) ---
-    makeSimpleRule('er', ''),   // schneller -> schnell
-    makeSimpleRule('sten', ''), // besten -> be (ошибочно, но лучше чем ничего)
-    makeSimpleRule('esten', ''),// neusten -> neu
-    makeUmlautRule('er', ''),   // kälter -> kalt
-    makeUmlautRule('sten', ''), // ärmsten -> arm
+    // сначала более специфичные длинные окончания
+    makeSimpleRule('ern', '', ['n', 'adj'], ['n', 'adj']),
+    makeSimpleRule('esten', '', ['adj'], ['adj']),
+    makeSimpleRule('sten', '', ['adj'], ['adj']),
+    makeSimpleRule('es', '', ['adj', 'n'], ['adj', 'n']),
+    makeSimpleRule('em', '', ['adj'], ['adj']),
+    makeSimpleRule('er', '', ['n', 'adj'], ['n', 'adj']),
+    makeSimpleRule('en', '', ['n', 'adj'], ['n', 'adj']),
+    makeSimpleRule('e', '', ['n', 'adj'], ['n', 'adj']),
+    makeSimpleRule('n', '', ['n'], ['n']),
+    makeSimpleRule('s', '', ['n'], ['n']),
+
+    // umlaut-варианты
+    makeUmlautRule('er', '', ['n', 'adj'], ['n', 'adj']),
+    makeUmlautRule('en', '', ['n', 'adj'], ['n', 'adj']),
+    makeUmlautRule('e', '', ['n', 'adj'], ['n', 'adj']),
 ];
 
-// 2. ЖЕНСКИЙ РОД
+// 2) Feminine forms
 const feminineRules = [
-    makeSimpleRule('innen', ''),
-    makeSimpleRule('in', ''),
-    makeUmlautRule('innen', ''), // Ärztinnen -> Arzt
-    makeUmlautRule('in', ''),    // Ärztin -> Arzt
+    makeUmlautRule('innen', '', ['n'], ['n']), // Ärztinnen -> Arzt
+    makeSimpleRule('innen', '', ['n'], ['n']),
+    makeUmlautRule('in', '', ['n'], ['n']),    // Ärztin -> Arzt
+    makeSimpleRule('in', '', ['n'], ['n']),
 ];
 
-// 3. ГЛАГОЛЫ (Спряжение)
+// 3) Глаголы
 const conjugationRules = [
-    // --- Простые окончания ---
-    makeSimpleRule('en', ''),
-    makeSimpleRule('est', 'en'),
-    makeSimpleRule('ten', 'en'),
-    makeSimpleRule('tet', 'en'),
-    makeSimpleRule('test', 'en'),
-    makeSimpleRule('te', 'en'),
-    makeSimpleRule('st', 'en'),
-    makeSimpleRule('et', 'en'),
-    makeSimpleRule('t', 'en'),
-    // (st -> n и t -> n для случаев типа wanderst -> wandern)
-    makeSimpleRule('st', 'n'),
-    makeSimpleRule('t', 'n'),
+    // сначала длинные
+    makeSimpleRule('test', 'en', ['v'], ['v']),
+    makeSimpleRule('tet', 'en', ['v'], ['v']),
+    makeSimpleRule('ten', 'en', ['v'], ['v']),
+    makeSimpleRule('est', 'en', ['v'], ['v']),
+    makeSimpleRule('te', 'en', ['v'], ['v']),
+    makeSimpleRule('st', 'en', ['v'], ['v']),
+    makeSimpleRule('et', 'en', ['v'], ['v']),
+    makeSimpleRule('t', 'en', ['v'], ['v']),
 
-    // --- Умлауты (fährt -> fahren) ---
-    makeUmlautRule('t', 'en'),
-    makeUmlautRule('st', 'en'),
-    makeUmlautRule('te', 'en'),
+    // альтернатива для wanderst -> wandern
+    makeSimpleRule('st', 'n', ['v'], ['v']),
+    makeSimpleRule('t', 'n', ['v'], ['v']),
+
+    // базовое инфинитивное en (оставляем, но только для v)
+    makeSimpleRule('en', '', ['v'], ['v']),
+
+    // umlaut для глаголов
+    makeUmlautRule('st', 'en', ['v'], ['v']),
+    makeUmlautRule('te', 'en', ['v'], ['v']),
+    makeUmlautRule('t', 'en', ['v'], ['v']),
 ];
 
-// 4. СПЕЦИФИКА ГЛАГОЛОВ (Смена гласной, Причастия, Zu)
+// 4) Сложные глагольные
 const complexVerbRules = [
-    // Смена i/ie -> e (spricht -> sprechen, liest -> lesen)
+    // liest/spricht -> lesen/sprechen (аккуратнее)
     {
         type: 'other',
-        isInflected: /(i|ie)[^aeiou]+(t|st|e)$/, // Находит i/ie в корне + окончание
+        isInflected: /^[a-zäöüß]{4,}(t|st|e)$/, 
         deinflect: (term) => {
-            // Очень простая и безопасная логика:
-            // Если есть "ie", меняем на "e". Иначе если "i", меняем на "e".
-            // И меняем окончание на "en"
-            let root = term.replace(/(t|st|e)$/, ''); // Убрали окончание
-            if (root.endsWith('ie')) {
-                return root.slice(0, -2) + 'en'; // защиту от дублей не ставим для скорости
+            let root = term.replace(/(st|t|e)$/, '');
+
+            // Меняем только ближайшее к концу ie/i в корневой зоне
+            const before = root;
+            root = root.replace(/ie(?=[^aeiouäöü]*$)/, 'e');
+            if (root === before) {
+                root = root.replace(/i(?=[^aeiouäöü]*$)/, 'e');
             }
-            root = root.replace(/ie(?=[^aeiou]*$)/, 'e'); // Попытка замены ie->e
-            root = root.replace(/i(?=[^aeiou]*$)/, 'e');  // Попытка замены i->e
-            return root + 'en';
+
+            const candidate = root + 'en';
+            return safeResult(term, candidate);
         },
-        conditionsIn: [], conditionsOut: [],
+        conditionsIn: ['v'],
+        conditionsOut: ['v'],
     },
-    // Zu-Infinitiv (anzufangen -> anfangen)
+    // zu-Infinitiv: удаляем только префиксное "zu"
     {
         type: 'other',
-        isInflected: /zu[a-zßäöü]+en$/,
-        deinflect: (term) => term.replace('zu', ''), // Тупо вырезаем первое zu. aufzumachen -> aufmachen.
-        conditionsIn: [], conditionsOut: [],
-    },
-    // Partizip II (ge-mach-t -> machen)
-    {
-        type: 'other',
-        isInflected: /^ge.+t$/, 
+        isInflected: /^zu[a-zäöüß]+en$/, 
         deinflect: (term) => {
-             // ge(2 символа) + корень + t(1 символ)
-             return term.slice(2, -1) + 'en'; 
+            const candidate = term.replace(/^zu/, '');
+            return safeResult(term, candidate);
         },
-        conditionsIn: [], conditionsOut: [],
+        conditionsIn: ['v'],
+        conditionsOut: ['v'],
     },
-    // Сильные (ge-fahr-en -> fahren)
+    // Partizip II weak: gemacht -> machen (более строго)
     {
         type: 'other',
-        isInflected: /^ge.+en$/, 
-        deinflect: (term) => term.slice(2), // просто убираем ge
-        conditionsIn: [], conditionsOut: [],
+        isInflected: /^ge[a-zäöüß]{3,}t$/, 
+        deinflect: (term) => {
+            const candidate = term.slice(2, -1) + 'en';
+            return safeResult(term, candidate);
+        },
+        conditionsIn: ['v'],
+        conditionsOut: ['v'],
+    },
+    // Partizip II strong: gefahren -> fahren
+    {
+        type: 'other',
+        isInflected: /^ge[a-zäöüß]{3,}en$/, 
+        deinflect: (term) => {
+            const candidate = term.slice(2);
+            return safeResult(term, candidate);
+        },
+        conditionsIn: ['v'],
+        conditionsOut: ['v'],
     }
 ];
 
-// 5. ОРФОГРАФИЯ И ПРИСТАВКИ
+// 5) Прочее (ослаблено)
 const miscRules = [
-    // ss -> ß
+    // ss -> ß только если нет уже ß и есть хотя бы 1 гласная (грубый guard)
     {
         type: 'other',
         isInflected: /ss/,
-        deinflect: (term) => term.replace(/ss/g, 'ß'),
-        conditionsIn: [], conditionsOut: [],
+        deinflect: (term) => {
+            if (term.includes('ß')) return term;
+            if (!/[aeiouäöü]/.test(term)) return term;
+            const candidate = term.replace(/ss/g, 'ß');
+            return safeResult(term, candidate);
+        },
+        conditionsIn: [],
+        conditionsOut: [],
     },
-    // hin / her и их комбинации (hinaus, herein...)
+    // Удаляем hin/her только в длинных словах (снижает ложные срабатывания)
     {
         type: 'other',
-        isInflected: /^(hin|her)/,
-        deinflect: (term) => term.replace(/^(hin|her)/, ''),
-        conditionsIn: [], conditionsOut: [],
+        isInflected: /^(hin|her)[a-zäöüß]{4,}$/, 
+        deinflect: (term) => {
+            const candidate = term.replace(/^(hin|her)/, '');
+            return safeResult(term, candidate);
+        },
+        conditionsIn: ['v'],
+        conditionsOut: ['v'],
     }
 ];
 
-// === ФИНАЛЬНЫЙ ЭКСПОРТ ===
+// === ЭКСПОРТ ===
 export const germanTransforms = {
     language: 'de',
     conditions,
     transforms: {
-        'declension': {
+        declension: {
             name: 'Declension',
             description: 'Nouns and Adjectives',
             rules: [...declensionRules, ...feminineRules]
         },
-        'conjugation': {
+        conjugation: {
             name: 'Conjugation',
             description: 'Verbs basic forms',
             rules: conjugationRules
         },
-        'complex_verbs': {
+        complex_verbs: {
             name: 'Complex Verbs',
             description: 'Vowel shifts, Participles, Zu',
             rules: complexVerbRules
         },
-        'misc': {
+        misc: {
             name: 'Misc',
             description: 'Prefixes and Orthography',
             rules: miscRules
