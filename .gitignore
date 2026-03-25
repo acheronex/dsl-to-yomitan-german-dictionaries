@@ -36,5 +36,6 @@ out/
 # Dictionary source files (proprietary)
 amazing-german-dics/
 japanese-dics/
+dictionaries/
 Yomitan-Extension/
 AGENTS.md
