@@ -123,10 +123,15 @@ def main():
         if not skip_media:
             for media_filename in converter.media_files:
                 media_path = input_path / media_filename
-                if media_path.exists():
-                    packer.add_media_file(media_path)
-                else:
+                path_exists = False
+
+                try:
+                    path_exists = media_path.exists()
+                except OSError:
                     pass
+
+                if path_exists:
+                    packer.add_media_file(media_path)
 
         metadata = {
             "title": dict_title,
